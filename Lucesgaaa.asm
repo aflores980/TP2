@@ -9,17 +9,17 @@
 ;===============================================================================
 
 ;===============================================================================
-; DIRECTIVAS DE INCLUSIÓN
+; DIRECTIVAS DE INCLUSI?N
 ;===============================================================================
 LIST P=16F887			
 #include "p16f887.inc"	
 	
 ;===============================================================================
-; CONFIGURACIÓN GENERAL DEL MCU
+; CONFIGURACI?N GENERAL DEL MCU
 ;=============================================================================== 	
 __CONFIG _XT_OSC, _WDTE_OFF, _MCLRE_ON, _LVP_OFF
 ;===============================================================================
-; DEFINICIÓN DE CONSTANTES
+; DEFINICI?N DE CONSTANTES
 ;===============================================================================     
 #DEFINE BUZZER	PORTC, 0
     
@@ -34,7 +34,7 @@ __CONFIG _XT_OSC, _WDTE_OFF, _MCLRE_ON, _LVP_OFF
 #DEFINE LED6	PORTD, 6
 #DEFINE LED7	PORTD, 7
 ;===============================================================================
-; DEFINICIÓN DE VARIABLES
+; DEFINICI?N DE VARIABLES
 ;=============================================================================== 
     CBLOCK 0X20
     DELAY1_Init
@@ -47,34 +47,56 @@ __CONFIG _XT_OSC, _WDTE_OFF, _MCLRE_ON, _LVP_OFF
     COUNTER_SECUENCES
     ENDC
 ;===============================================================================
-; DECLARACIÓN DE MACROS PARA CONFIGURACIÓN DE REGISTROS
+; DECLARACI?N DE MACROS PARA CONFIGURACI?N DE REGISTROS
 ;===============================================================================
 CFG_SWITCH MACRO
     BANKSEL ANSEL
-    BCF	    ANSEL, 5
+    BCF	     ANSEL, 5
     
     BANKSEL TRISE
-    BSF	    TRISE, 0
+    BSF	     TRISE, 0
+
+    BANKSEL PORTE
+    BCF     SWITCH
 ENDM
 CFG_DIGITS_DSPL MACRO
 ENDM
 DSPL_ALL_OFF MACRO
 ENDM
 CFG_LEDS MACRO
+    BANKSEL TRISD
+    CLRF    TRISD
+    
+    BANKSEL PORTD
+    CLRF    PORTD
 ENDM
 LEDS_ON MACRO
+    BANKSEL PORTD
+    MOVLW b'11111111'
+    MOVWF PORTD
 ENDM
 LEDS_OFF MACRO
+    BANKSEL PORTD
+    CLRF    PORTD
 ENDM
 LEDS_RLF MACRO
 ENDM
 LEDS_RRF MACRO
 ENDM
 CFG_BUZZER MACRO
+    BANKSEL TRISC
+    BCF     BUZZER
+    
+    BANKSEL PORTD
+    BCF     BUZZER
 ENDM
 BUZZER_ON MACRO
+    BANKSEL PORTC
+    BSF     BUZZER
 ENDM
 BUZZER_OFF MACRO
+    BANKSEL PORTC
+    BCF     BUZZER
 ENDM
 CFG_DELAY_100MS MACRO
 ENDM
@@ -87,22 +109,21 @@ ENDM
 CFG_SECUENCES MACRO
 ENDM
 ;===============================================================================
-; INICIALIZACIÓN DEL MCU (CÓDIGO ABSOLUTO)
+; INICIALIZACI?N DEL MCU (C?DIGO ABSOLUTO)
 ;===============================================================================    
     ORG     0x00	;Vector de Reset
     GOTO    INICIO	;Salto al inicio del programa principal
-    ORG     0x05	;Ubicación Programa Principal en la memoria 
+    ORG     0x05	;Ubicaci?n Programa Principal en la memoria 
 			;de programa
 ;===============================================================================
-; INICIALIZACIÓN DE MACROS PARA CONFIGURACIÓN DE REGISTROS
+; INICIALIZACI?N DE MACROS PARA CONFIGURACI?N DE REGISTROS
 ;===============================================================================    	    
 
 ;===============================================================================
 ; INICIO PROGRAMA PRINCIPAL
 ;===============================================================================						
 INICIO			
-   ; --- CONFIGURACIÓN DEL PUERTO D ---
-   CONFIG_PORTD
+   
 
 MAIN_LOOP
    
@@ -111,14 +132,14 @@ MAIN_LOOP
 ;===============================================================================
 ; SUBRUTINAS
 ;===============================================================================	 
-;*******************************************************************************
+;***************************
 ; @brief    LOOP DE UNA CANTIDAD DE CICLOS PARA GENERAR UN DELAY
 ;           
 ; @details  MUEVO VALORES ESTABLECIDOS DE CANTIDAD DE CICLOS A LA VARIABLE DE
 ;	    DE CONTAR (A TRAVEZ DE W) Y LUEGO LA USO PARA UN LOOP QUE CUENTA 
 ;	    LA CANTIDAD DE CICLOS. UNA VEZ TERMINADO EL LOOP, VUELVE A AL
 ;	    MAIN LOOP. USO 2 NOP PARA AJUSTAR Y QUE QUEDE EXACTAMENTE 1 ms
-;******************************************************************************* 
+;*************************** 
 
 RETURN			; (2 ciclos)
 ;===============================================================================		
